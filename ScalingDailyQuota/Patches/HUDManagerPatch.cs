@@ -10,8 +10,8 @@ namespace ScalingDailyQuota.Patches
     internal class HUDManagerPatch
     {
         [HarmonyPatch("DisplayNewDeadline")]
-        [HarmonyPrefix]
-        static bool DisplayNewDeadline(int overtimeBonus)
+        [HarmonyPrefix] // does not run orginal
+        static bool DisplayNewDeadlinePrefix(int overtimeBonus)
         {
             // if it is the start of a new quota series display the new quota, else do not display.
             // not sure if time ticks while this is happening, might need to be something like.

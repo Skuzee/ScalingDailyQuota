@@ -150,9 +150,15 @@ namespace ScalingDailyQuota
 
         }
 
-
+        // Currenly only runs on server
         public static void SetNewQuotaAtEndOfCycle(int otb)
         {
+            // reduntant, but here for clarity and safety.
+            if (!NetworkManager.Singleton.IsServer)
+            {
+                return;
+            }
+
             // Overtime Bonus
             // ???
 
@@ -177,11 +183,17 @@ namespace ScalingDailyQuota
 
         public static void SetDailyQuota()
         {
+            // reduntant, but here for clarity and safety.
+            if (!NetworkManager.Singleton.IsServer)
+            {
+                return;
+            }
+
             // make variable readable...
-            int dailyIncrease = ScalingDailyQuota.playerScaling.Value ? ScalingDailyQuota.playerQuota_dailyIncrease.Value : ScalingDailyQuota.fixedQuota_dailyIncrease.Value;
-            int difficultyIncrease = ScalingDailyQuota.playerScaling.Value ? ScalingDailyQuota.playerQuota_difficultyIncrease.Value : ScalingDailyQuota.fixedQuota_difficultyIncrease.Value;
-            int numberOfPlayer = RoundManager.Instance.playersManager.connectedPlayersAmount + 1;
-            int quotasFulfilled = TimeOfDay.Instance.timesFulfilledQuota;
+            var dailyIncrease = ScalingDailyQuota.playerScaling.Value ? ScalingDailyQuota.playerQuota_dailyIncrease.Value : ScalingDailyQuota.fixedQuota_dailyIncrease.Value;
+            var difficultyIncrease = ScalingDailyQuota.playerScaling.Value ? ScalingDailyQuota.playerQuota_difficultyIncrease.Value : ScalingDailyQuota.fixedQuota_difficultyIncrease.Value;
+            var numberOfPlayer = RoundManager.Instance.playersManager.connectedPlayersAmount + 1;
+            var quotasFulfilled = TimeOfDay.Instance.timesFulfilledQuota;
 
             // calculate new daily quota
             TimeOfDay.Instance.profitQuota +=
@@ -237,9 +249,11 @@ namespace ScalingDailyQuota
                 TimeOfDay.Instance.quotaFulfilled = qf;
                 TimeOfDay.Instance.timesFulfilledQuota = tfq;
                 TimeOfDay.Instance.timeUntilDeadline = tud;
-            }
 
-           
+                // update monitor. This already happens via PassTimeToNextDay->UpdateProfitQuotaCurrentTime,
+                // but sometimes we need to update it when a player joins/leaves.
+                StartOfRound.Instance.profitQuotaMonitorText.text = $"PROFIT QUOTA:\n${qf} / ${pq}";
+            }
         }
     }
 }

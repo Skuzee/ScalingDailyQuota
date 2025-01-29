@@ -18,8 +18,8 @@ namespace ScalingDailyQuota.Patches
     internal class TimeOfDayPatch //: DailyQuota // : NetworkBehaviour
     {
         [HarmonyPatch("Awake")]
-        [HarmonyPrefix]
-        public static void Awake(ref TimeOfDay __instance)
+        [HarmonyPrefix] // runs original
+        public static void AwakePrefix(ref TimeOfDay __instance)
         {
             var __quotaVariables = __instance.quotaVariables;
             __quotaVariables.startingQuota = ScalingDailyQuota.playerScaling.Value ? ScalingDailyQuota.playerQuota_startingAmount.Value : ScalingDailyQuota.fixedQuota_startingAmount.Value;
@@ -30,19 +30,23 @@ namespace ScalingDailyQuota.Patches
         // we are hijacking it to set own quota, but we still use this to
         // display the new quota at the end of a cycle.
         [HarmonyPatch("SetNewProfitQuota")]
-        [HarmonyPrefix]
-        static bool SetNewProfitQuota() 
-        {
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-            {
-                // save overtime bonus for display
-                // we do these calculations now, because daysUntilDeadline is reset when we set a new quota
-                int oversellAmount = TimeOfDay.Instance.quotaFulfilled - TimeOfDay.Instance.profitQuota;
-                int overtimeBonus = oversellAmount / 5 + 15 * TimeOfDay.Instance.daysUntilDeadline;
+        [HarmonyPrefix] // does not run original
 
-                // update quota at end of cycle
-                ScalingDailyQuota.SetNewQuotaAtEndOfCycle(overtimeBonus);
+        static bool SetNewProfitQuotaPrefix() 
+        {
+            if (!NetworkManager.Singleton.IsServer)
+            {
+                return false;
             }
+
+            // save overtime bonus for display
+            // we do these calculations now, because daysUntilDeadline is reset when we set a new quota
+            int oversellAmount = TimeOfDay.Instance.quotaFulfilled - TimeOfDay.Instance.profitQuota;
+            int overtimeBonus = oversellAmount / 5 + 15 * TimeOfDay.Instance.daysUntilDeadline;
+
+            // update quota at end of cycle
+            ScalingDailyQuota.SetNewQuotaAtEndOfCycle(overtimeBonus);
+   
 
             return false;
         }
