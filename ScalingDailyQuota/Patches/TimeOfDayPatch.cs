@@ -22,7 +22,7 @@ namespace ScalingDailyQuota.Patches
         public static void AwakePrefix(ref TimeOfDay __instance)
         {
             var __quotaVariables = __instance.quotaVariables;
-            __quotaVariables.startingQuota = ScalingDailyQuota.playerScaling.Value ? ScalingDailyQuota.playerQuota_startingAmount.Value : ScalingDailyQuota.fixedQuota_startingAmount.Value;
+            __quotaVariables.startingQuota = ScalingDailyQuota.config_playerScaling.Value ? ScalingDailyQuota.playerQuota_startingAmount.Value : ScalingDailyQuota.fixedQuota_startingAmount.Value;
             __quotaVariables.deadlineDaysAmount = ScalingDailyQuota.config_daysPerCycle.Value;
         }
 
