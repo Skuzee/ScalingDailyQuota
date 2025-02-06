@@ -64,6 +64,7 @@ namespace ScalingDailyQuota
             harmony.PatchAll(typeof(ScalingDailyQuota));
             harmony.PatchAll(typeof(StartOfRoundPatch));
             harmony.PatchAll(typeof(TimeOfDayPatch));
+            harmony.PatchAll(typeof(DepositItemsDeskPatch));
         }
 
 
@@ -189,23 +190,24 @@ namespace ScalingDailyQuota
             // Increment quotas-completed counter
             TimeOfDay.Instance.timesFulfilledQuota++;
 
-            // Reset quota tracker, this should rest or roll over quota
+            // Reset quota tracker, this should reset or roll over quota depending on config
             mls.LogWarning("test this part of the code");
+            mls.LogWarning("credits may be added twice if original code is still running. better check this!");
 
             if (config_quotaRollover.Value)
             {
                 // Add to group credits based on company kickback commission percentage
-                term.groupCredits += (int)((float)TimeOfDay.Instance.quotaFulfilled * config_commissionPercent.Value);
+                //term.groupCredits += (int)((float)TimeOfDay.Instance.quotaFulfilled * config_commissionPercent.Value);
                 // Rollover quota
                 TimeOfDay.Instance.quotaFulfilled -= TimeOfDay.Instance.profitQuota;
             }
             else
             {
                 // Add to group credits based on company kickback commission percentage
-                term.groupCredits += (int)((float)TimeOfDay.Instance.quotaFulfilled * config_commissionPercent.Value);
+                //term.groupCredits += (int)((float)TimeOfDay.Instance.quotaFulfilled * config_commissionPercent.Value);
 
                 // Everything over quota is credited at 100% commission percentage
-                term.groupCredits += (TimeOfDay.Instance.quotaFulfilled - TimeOfDay.Instance.profitQuota);
+                //term.groupCredits += (TimeOfDay.Instance.quotaFulfilled - TimeOfDay.Instance.profitQuota);
                 TimeOfDay.Instance.quotaFulfilled = 0;
             }
 
@@ -214,6 +216,9 @@ namespace ScalingDailyQuota
 
             // Increase Quota (will also sync with clients)
             SetDailyQuota();
+
+            //rackup quota?
+            //???
 
             // update shop
             Terminal terminal = UnityEngine.Object.FindObjectOfType<Terminal>();

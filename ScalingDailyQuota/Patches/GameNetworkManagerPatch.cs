@@ -20,7 +20,7 @@ namespace ScalingDailyQuota.Patches
                 return;
 
             networkPrefab = Modules.NetworkPrefabs.CreateNetworkPrefab("Angst-ScalingDailyQuota");
-            networkPrefab.AddComponent<ScalingDailyQuota.SDQNetworkHandler>();
+            networkPrefab.AddComponent<SDQNetworkHandler>();
 
             NetworkManager.Singleton.AddNetworkPrefab(networkPrefab);
         }
