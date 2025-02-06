@@ -22,16 +22,16 @@ namespace ScalingDailyQuota.Patches
         public static void AwakePrefix(ref TimeOfDay __instance)
         {
             var __quotaVariables = __instance.quotaVariables;
-            __quotaVariables.startingQuota = ScalingDailyQuota.playerScaling.Value ? ScalingDailyQuota.playerQuota_startingAmount.Value : ScalingDailyQuota.fixedQuota_startingAmount.Value;
+            __quotaVariables.startingQuota = ScalingDailyQuota.config_playerScaling.Value ? ScalingDailyQuota.playerQuota_startingAmount.Value : ScalingDailyQuota.fixedQuota_startingAmount.Value;
             __quotaVariables.deadlineDaysAmount = ScalingDailyQuota.config_daysPerCycle.Value;
         }
+        
 
         // game method that sets a new quota at end of quota cycle
         // we are hijacking it to set own quota, but we still use this to
         // display the new quota at the end of a cycle.
         [HarmonyPatch("SetNewProfitQuota")]
         [HarmonyPrefix] // does not run original
-
         static bool SetNewProfitQuotaPrefix() 
         {
             if (!NetworkManager.Singleton.IsServer)
@@ -51,6 +51,14 @@ namespace ScalingDailyQuota.Patches
             return false;
         }
 
+
+        [HarmonyPatch("SetBuyingRateForDay")]
+        [HarmonyPrefix] // does not run original
+        static bool  SetBuyingRateForDayPrefix()
+        {
+            StartOfRound.Instance.companyBuyingRate = 1f;
+            return false;
+        }
 
         //[HarmonyPatch("SyncNewProfitQuotaClientRpc")]
         //[HarmonyPrefix]

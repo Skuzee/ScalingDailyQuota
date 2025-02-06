@@ -19,13 +19,11 @@ namespace ScalingDailyQuota.Patches
         [HarmonyPrefix] // runs original
         static void PassTimeToNextDayPrefix()
         {
-                ScalingDailyQuota.mls.LogInfo("Days Until Deadline: " + (TimeOfDay.Instance.daysUntilDeadline - 1));
-
-                // this calculation is offset by +1 because it happens right before daysUntilDeadline is decremented.
-                if (NetworkManager.Singleton.IsServer && TimeOfDay.Instance.daysUntilDeadline > 1 && StartOfRound.Instance.currentLevel.planetHasTime)
-                {
-                    ScalingDailyQuota.SetDailyQuota();
-                    //HUDManager.Instance.UIAudio.PlayOneShot(HUDManager.Instance.newProfitQuotaSFX);
+            // this calculation is offset by +1 because it happens right before daysUntilDeadline is decremented.
+            if (NetworkManager.Singleton.IsServer && TimeOfDay.Instance.daysUntilDeadline > 1 && StartOfRound.Instance.currentLevel.planetHasTime)
+            {
+                ScalingDailyQuota.SetDailyQuota();
+                //HUDManager.Instance.UIAudio.PlayOneShot(HUDManager.Instance.newProfitQuotaSFX);
                 }
         }
 
